@@ -49,18 +49,18 @@ load-plugins = [
     "pylint_pytest"
 ]
 
-# [tool.pylint.messages_control]
-# disable = [
-#     "logging-fstring-interpolation",
-#     "global-statement",
-#     "broad-exception-caught",
-#     "too-few-public-methods",
-# ]
+[tool.pylint.messages_control]
+disable = [
+    "logging-fstring-interpolation",
+    "global-statement",
+    "broad-exception-caught",
+    "too-few-public-methods",
+]
 
 [tool.pylint.format]
 max-line-length = 120
 good-names = [
-    "_",
+    "_", "l"
 ]
 
 [tool.pylint.design]

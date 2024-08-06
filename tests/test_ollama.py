@@ -46,7 +46,6 @@ def mock_request(request, monkeypatch, mock_content, resp):
     content = getattr(request, 'param', {}).get('content', [mock_content]*50)
 
     def mock_function(*args, **kwargs):
-        global app
         res = requests.Response()
         res.status_code = scode.pop(0)
         res._content = content.pop(0) # pylint: disable=protected-access
@@ -78,7 +77,7 @@ def test_entrypoint_pyproj():
 def test_make_request_fail():
     """Test failed request."""
     obj = octo_plugin.OllamaTSLModel()
-    with pytest.raises(Exception, match=r"^Failed to make request to ollama.*"):
+    with pytest.raises(requests.RequestException, match=r'^Failed to make request to ollama.*'):
         obj.make_request('GET', 'test')
 
 def test_make_request_success(resp):
@@ -122,14 +121,14 @@ def test_get_model_list_env(monkeypatch, resp):
 def test_load_fail_stauts():
     """Test request failure in model loading."""
     obj = octo_plugin.OllamaTSLModel()
-    with pytest.raises(Exception, match=r"^Failed to make request to ollama.*"):
+    with pytest.raises(requests.RequestException, match=r'^Failed to make request to ollama.*'):
         obj.load()
 
 # @pytest.mark.parametrize('mock_request', [{'status_code': 400}], indirect=True)
 def test_load_fail_load_pull():
     """Test ollama failure in model loading."""
     obj = octo_plugin.OllamaTSLModel()
-    with pytest.raises(Exception, match=r"^Failed to download model.*"):
+    with pytest.raises(requests.RequestException, match=r'^Failed to download model.*'):
         obj.load()
 
 @pytest.mark.parametrize(
@@ -145,7 +144,7 @@ def test_load_fail_load_pull():
 def test_load_fail_load_create():
     """Test ollama failure in model loading."""
     obj = octo_plugin.OllamaTSLModel()
-    with pytest.raises(Exception, match=r"^Failed to create custom model.*"):
+    with pytest.raises(requests.RequestException, match=r'^Failed to create custom model.*'):
         obj.load()
 
 @pytest.mark.parametrize(
@@ -169,13 +168,13 @@ def test_load_not_present(resp):
     assert res._args[0] == 'POST'
     assert res._args[1] == octo_plugin.DEFAULT_OLLAMA_ENDPOINT + '/create'
     assert res._kwargs['json']['name'] == name
-    assert res._kwargs['json']['stream'] == False
+    assert res._kwargs['json']['stream'] is False
 
     res = resp.pop()
     assert res._args[0] == 'POST'
     assert res._args[1] == octo_plugin.DEFAULT_OLLAMA_ENDPOINT + '/pull'
     assert res._kwargs['json']['name'] == ollama_name
-    assert res._kwargs['json']['stream'] == False
+    assert res._kwargs['json']['stream'] is False
 
     assert len(resp) == 1  # From get_model_list
 
@@ -213,7 +212,7 @@ def test_translate_token_not_liist(resp):
     src = 'japanese'
     dst = 'english'
 
-    with pytest.raises(TypeError, match=r"tokens must be a list of strings or a list of list of strings"):
+    with pytest.raises(TypeError, match=r'tokens must be a list of strings or a list of list of strings'):
         obj._translate(tokens, src, dst)
 
 @pytest.mark.parametrize(
@@ -232,7 +231,7 @@ def test_translate_not_done():
     src = 'japanese'
     dst = 'english'
 
-    with pytest.raises(Exception, match=r"^Failed to translate text with model.*"):
+    with pytest.raises(requests.RequestException, match=r'^Failed to translate text with model.*'):
         obj._translate(tokens, src, dst)
 
 @pytest.mark.parametrize(
@@ -289,14 +288,14 @@ def test_translate_batch(resp):
     res = obj._translate(tokens, src, dst)
     assert res == expected
 
-    for tk in tokens[::-1]:
+    for tok in tokens[::-1]:
         res = resp.pop()
         assert res._args[0] == 'POST'
         assert res._args[1] == octo_plugin.DEFAULT_OLLAMA_ENDPOINT + '/generate'
         prompt = res._kwargs['json']['prompt']
         assert f'src="{src}"' in prompt
         assert f'dst="{dst}"' in prompt
-        inp_text = '. '.join(tk)
+        inp_text = '. '.join(tok)
         assert f'text="{inp_text}' in prompt
 
     assert len(resp) == l
