@@ -33,10 +33,29 @@ release = [
 "ollama.tsl" = "ocr_translate_ollama:tsl_model_data"
 
 [project.entry-points."ocr_translate.tsl_models"]
-"ollama.tsl" = "ocr_translate_ollama.plugin:ollamaTSLModel"
+"ollama.tsl" = "ocr_translate_ollama.plugin:OllamaTSLModel"
 
 [tool.flit.module]
 name = "ocr_translate_ollama"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+DJANGO_SETTINGS_MODULE = "settings"
+log_cli = 1
+pythonpath = ["./tests"]
+
+[tool.pylint.main]
+load-plugins = [
+    "pylint_pytest"
+]
+
+# [tool.pylint.messages_control]
+# disable = [
+#     "logging-fstring-interpolation",
+#     "global-statement",
+#     "broad-exception-caught",
+#     "too-few-public-methods",
+# ]
 
 [tool.pylint.format]
 max-line-length = 120
