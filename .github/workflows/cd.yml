@@ -45,7 +45,7 @@ jobs:
             pip install
             --index-url https://test.pypi.org/simple/
             --extra-index-url https://pypi.org/simple/
-            ocr_translate_ollama=${{ steps.get_version.outputs.VERSION }}
+            ocr_translate_ollama==${{ steps.get_version.outputs.VERSION }}
 
       - name: Build and publish on PyPI
         run: >
