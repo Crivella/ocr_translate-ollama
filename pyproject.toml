@@ -1,0 +1,50 @@
+[build-system]
+# build the package with [flit](https://flit.readthedocs.io)
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+# See https://www.python.org/dev/peps/pep-0621/
+name = "ocr_translate_ollama"
+dynamic = ["version"] # read from ocr_translate/__init__.py
+description = "Plugin to implement ollama (LLMs) based translations for ocr_translate"
+authors = []
+readme = "README.md"
+license = { file = "LICENSE.txt" }
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.10",
+]
+keywords = ["django", "translation"]
+requires-python = ">=3.10"
+dependencies = [
+    "django-ocr_translate>=0.2.1,<1.0",
+]
+
+[project.urls]
+Source = "https://github.com/Crivella/ocr_translate-ollama"
+
+[project.optional-dependencies]
+release = [
+    "flit",
+]
+
+[project.entry-points."ocr_translate.tsl_data"]
+"ollama.tsl" = "ocr_translate_ollama:tsl_model_data"
+
+[project.entry-points."ocr_translate.tsl_models"]
+"ollama.tsl" = "ocr_translate_ollama.plugin:ollamaTSLModel"
+
+[tool.flit.module]
+name = "ocr_translate_ollama"
+
+[tool.pylint.format]
+max-line-length = 120
+good-names = [
+    "_",
+]
+
+[tool.pylint.design]
+max-args = 10
+max-locals = 20
+max-attributes = 12
