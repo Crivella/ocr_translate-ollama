@@ -44,31 +44,6 @@ def mock_translate():
 
     return mock_function
 
-@pytest.fixture(scope='function')
-def mock_called():
-    """Mock of the time.sleep function."""
-    def mock_function(*args, **kwargs):
-        mock_function.called = True
-        mock_function.args = args
-        mock_function.kwargs = kwargs
-
-    return mock_function
-
-@pytest.fixture(scope='function')
-def mock_datetime():
-    """Mock of the datetime.datetime.now function."""
-    def mock_function():
-        mock_function.called = True
-        mock_function.args = ()
-        mock_function.kwargs = {}
-        mock_function.count += 1
-        return mock_function.count
-
-    mock_function.count = 0
-    mock_function.now = mock_function
-
-    return mock_function
-
 @pytest.fixture(scope='module')
 def model_base_name() -> str:
     """Model name."""
