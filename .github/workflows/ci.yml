@@ -3,7 +3,7 @@ name: ci
 on:
     push:
       branches:
-          - master
+          - main
       paths:
         - "ocr_translate_ollama/**"
         - "pyproject.toml"
