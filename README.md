@@ -19,7 +19,7 @@ This behavior can be changed by setting the environment variable `OCT_OLLAMA_PRE
 ## IMPORTANT
 
 [Ollama](https://github.com/ollama/ollama) needs to be installed separately and reachable from the server (check the link for instructions).
-The environment variable `OLLAMA_ENDPOINT` should be set to the endpoint of the ollama server (including the `/api`).
+The environment variable `OCT_OLLAMA_ENDPOINT` should be set to the endpoint of the ollama server (including the `/api`).
 
 Example:
 

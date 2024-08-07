@@ -18,7 +18,7 @@
 ###################################################################################
 """Plugin to implement ollama (LLMs) based translations for ocr_translate"""
 
-__version__ = '0.1.3'
+__version__ = '0.1.4'
 
 from .commons import MODEL_NAME_PREFIX
 

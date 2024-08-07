@@ -67,4 +67,4 @@ def endpoint() -> str:
 @pytest.fixture(scope='function')
 def env_endpoint(monkeypatch, endpoint):
     """Set environment variable for endpoint."""
-    monkeypatch.setenv('OLLAMA_ENDPOINT', endpoint)
+    monkeypatch.setenv('OCT_OLLAMA_ENDPOINT', endpoint)
