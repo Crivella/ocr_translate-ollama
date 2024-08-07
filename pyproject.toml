@@ -28,6 +28,17 @@ Source = "https://github.com/Crivella/ocr_translate-ollama"
 release = [
     "flit",
 ]
+tests = [
+    "pytest",
+    "pytest-cov",
+    "pytest-django~=4.5.2",
+]
+pre-commit = [
+    "pre-commit~=3.3.3",
+    "pylint~=2.17.4",
+    "pylint-pytest~=1.1.2",
+    "pylint-django~=2.5.3",
+]
 
 [project.entry-points."ocr_translate.tsl_data"]
 "ollama.tsl" = "ocr_translate_ollama:tsl_model_data"
