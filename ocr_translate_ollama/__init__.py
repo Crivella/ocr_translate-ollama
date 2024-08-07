@@ -20,9 +20,11 @@
 
 __version__ = '0.1.3'
 
+from .commons import MODEL_NAME_PREFIX
+
 tsl_model_data = {
     # Name of the model that will be created in the user database and displayed in the extension
-    'name': 'ollama_llama3:8b',
+    'name': f'{MODEL_NAME_PREFIX}_llama3:8b',
     # List of ISO 639-1 codes of the source languages that will be supported by the model
     'lang_src': [
         'en', 'it', 'ja', 'zh', 'zht', 'es', 'fr', 'de', 'pt', 'nl', 'ru', 'ko'

@@ -22,6 +22,8 @@
 
 import pytest
 
+from ocr_translate_ollama import commons, plugin
+
 
 @pytest.fixture(scope='function')
 def mock_translate():
@@ -66,3 +68,28 @@ def mock_datetime():
     mock_function.now = mock_function
 
     return mock_function
+
+@pytest.fixture(scope='module')
+def model_base_name() -> str:
+    """Model name."""
+    return 'llama3:8b'
+
+@pytest.fixture(scope='module')
+def model_name(model_base_name) -> str:
+    """Model name."""
+    return f'{commons.MODEL_NAME_PREFIX}_{model_base_name}'
+
+@pytest.fixture(scope='function')
+def model(model_name) -> plugin.OllamaTSLModel:
+    """Generate a model."""
+    return plugin.OllamaTSLModel(name=model_name)
+
+@pytest.fixture(scope='function')
+def endpoint() -> str:
+    """Set endpoint."""
+    return 'http://random.com'
+
+@pytest.fixture(scope='function')
+def env_endpoint(monkeypatch, endpoint):
+    """Set environment variable for endpoint."""
+    monkeypatch.setenv('OLLAMA_ENDPOINT', endpoint)
