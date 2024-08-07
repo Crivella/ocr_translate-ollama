@@ -8,6 +8,14 @@ This is a plugin for [ocr_translate](https://github.com/Crivella/ocr_translate) 
 - Add `ocr_translate_ollama` to your `INSTALLED_APPS` in `settings.py`
 - Run the server with `AUTOCREATE_VALIDATED_MODELS` once
 
+## Ollama name prefixes
+
+To avoid cluttering the ollama server (or having to set a dedicated one), the plugin will create new models from the original one (with a dedicated system prompt) adding the prefix `oct_ollama_` to the model names.
+
+This behavior can be changed by setting the environment variable `OCT_OLLAMA_PREFIX` to a different value.
+
+**NOTE**: The final `_` is added by the plugin, so it should not be included in the prefix.
+
 ## IMPORTANT
 
 [Ollama](https://github.com/ollama/ollama) needs to be installed separately and reachable from the server (check the link for instructions).
