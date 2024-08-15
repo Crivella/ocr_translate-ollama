@@ -39,7 +39,7 @@ class OllamaTSLModel(m.TSLModel):
         super().__init__(*args, **kwargs)
         endpoint = os.getenv('OCT_OLLAMA_ENDPOINT', None)
         if endpoint is None:
-            logger.warning(f'OLLAMA_ENDPOINT not set. Using default value `{DEFAULT_OLLAMA_ENDPOINT}`.')
+            logger.warning(f'OCT_OLLAMA_ENDPOINT not set. Using default value `{DEFAULT_OLLAMA_ENDPOINT}`.')
             endpoint = DEFAULT_OLLAMA_ENDPOINT
 
         self.endpoint = endpoint
