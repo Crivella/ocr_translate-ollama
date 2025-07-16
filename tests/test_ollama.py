@@ -28,6 +28,7 @@ import requests
 import ocr_translate_ollama as octo
 import ocr_translate_ollama.plugin as octo_plugin
 
+pytestmark = pytest.mark.django_db
 
 @pytest.fixture(scope='function')
 def resp():

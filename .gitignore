@@ -6,6 +6,9 @@ __pycache__
 *.sqlite3
 media
 
+# Used for tests only
+migrations
+
 # Backup files #
 *.bak
 
