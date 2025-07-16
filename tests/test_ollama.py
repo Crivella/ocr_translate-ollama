@@ -28,6 +28,7 @@ import requests
 import ocr_translate_ollama as octo
 import ocr_translate_ollama.plugin as octo_plugin
 
+pytestmark = pytest.mark.django_db
 
 @pytest.fixture(scope='function')
 def resp():
@@ -87,6 +88,36 @@ def test_make_request_success(resp, model):
     assert res._args[0] == typ
     assert res._args[1] == octo_plugin.DEFAULT_OLLAMA_ENDPOINT + '/' + url
 
+@pytest.mark.parametrize(
+        'mock_request', [{
+            'status_code': [200,],
+            'content': [b'{"something": "else"}\n{ "status": "success" }',]
+        }],
+        indirect=True
+    )
+def test_make_request_success_multilinejson(resp, model):
+    """Test successful request."""
+    typ = 'SOME'
+    url = 'test'
+    model.make_request(typ, url)
+    res = resp.pop()
+    assert res._args[0] == typ
+    assert res._args[1] == octo_plugin.DEFAULT_OLLAMA_ENDPOINT + '/' + url
+
+@pytest.mark.parametrize(
+        'mock_request', [{
+            'status_code': [200,],
+            'content': [b'{"something": "else"}\n{ "status": "non-success" }',]
+        }],
+        indirect=True
+    )
+def test_make_request_failw_multilinejson(resp, model):
+    """Test successful request."""
+    typ = 'SOME'
+    url = 'test'
+    with pytest.raises(requests.RequestException, match=r'^Failed to parse response from ollama:.*'):
+        model.make_request(typ, url)
+
 def test_get_model_list_noenv(resp, model):
     """Test that the model list is returned correctly."""
     endpoint = octo_plugin.DEFAULT_OLLAMA_ENDPOINT
@@ -127,6 +158,7 @@ def test_load_fail_load_pull(model):
             'content': [
                 b'{}',
                 b'{ "status": "success" }',
+                b'{ "version": "0.0.0" }',
                 b'{ "status": "error" }',
                 ]
             }],
@@ -142,12 +174,13 @@ def test_load_fail_load_create(model):
             'content': [
                 b'{}',
                 b'{ "status": "success" }',
+                b'{ "version": "0.0.0" }',
                 b'{ "status": "success" }',
                 ]
             }],
         indirect=True
     )
-def test_load_not_present(resp, model_base_name, model_name, model):
+def test_load_not_present_old_vers(resp, model_base_name, model_name, model):
     """Test successful model loading."""
     model.load()
 
@@ -156,6 +189,44 @@ def test_load_not_present(resp, model_base_name, model_name, model):
     assert res._args[1] == octo_plugin.DEFAULT_OLLAMA_ENDPOINT + '/create'
     assert res._kwargs['json']['name'] == model_name
     assert res._kwargs['json']['stream'] is False
+    assert 'modelfile' in res._kwargs['json']
+
+    res = resp.pop()
+    assert res._args[0] == 'GET'
+
+    res = resp.pop()
+    assert res._args[0] == 'POST'
+    assert res._args[1] == octo_plugin.DEFAULT_OLLAMA_ENDPOINT + '/pull'
+    assert res._kwargs['json']['name'] == model_base_name
+    assert res._kwargs['json']['stream'] is False
+
+    assert len(resp) == 1  # From get_model_list
+
+@pytest.mark.parametrize(
+        'mock_request', [{
+            'content': [
+                b'{}',
+                b'{ "status": "success" }',
+                b'{ "version": "1.0.0" }',
+                b'{ "status": "success" }',
+                ]
+            }],
+        indirect=True
+    )
+def test_load_not_present_new_vers(resp, model_base_name, model_name, model):
+    """Test successful model loading."""
+    model.load()
+
+    res = resp.pop()
+    assert res._args[0] == 'POST'
+    assert res._args[1] == octo_plugin.DEFAULT_OLLAMA_ENDPOINT + '/create'
+    assert res._kwargs['json']['name'] == model_name
+    assert res._kwargs['json']['stream'] is False
+    assert 'from' in res._kwargs['json']
+    assert 'system' in res._kwargs['json']
+
+    res = resp.pop()
+    assert res._args[0] == 'GET'
 
     res = resp.pop()
     assert res._args[0] == 'POST'

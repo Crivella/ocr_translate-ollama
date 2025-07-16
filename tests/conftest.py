@@ -57,7 +57,9 @@ def model_name(model_base_name) -> str:
 @pytest.fixture(scope='function')
 def model(model_name) -> plugin.OllamaTSLModel:
     """Generate a model."""
-    return plugin.OllamaTSLModel(name=model_name)
+    res = plugin.OllamaTSLModel(name=model_name)
+    res.save()
+    return res
 
 @pytest.fixture(scope='function')
 def endpoint() -> str:

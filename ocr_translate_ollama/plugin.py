@@ -50,7 +50,26 @@ class OllamaTSLModel(m.TSLModel):
         if res.status_code != 200:
             logger.error(f'Failed to make request to ollama: {res.text}')
             raise requests.RequestException(f'Failed to make request to ollama: {res.text}')
+        try:
+            data = res.json()
+        # Case of multiple json lines
+        except Exception as exc:  # pylint: disable=bare-except
+            body = res.content.decode('utf-8').replace('\n', '').replace(' ', '')
+            if '"status":"success"' in body:
+                return {'status': 'success'}
+            raise requests.RequestException(f'Failed to parse response from ollama: {body}. Error: {exc}')
         return res.json()
+
+    def get_version(self) -> tuple[int, int, int]:
+        """Get the version of the ollama server.
+
+        Returns:
+            tuple[int, int, int]: Version of the ollama server.
+        """
+        version_data = self.make_request('GET', 'version') or {}
+        version_str = version_data.get('version', '0.0.0')
+        return tuple(map(int, version_str.split('.')))
+
 
     def get_model_list(self) -> list[dict]:
         """Get the list of models available inside ollama.
@@ -81,21 +100,27 @@ class OllamaTSLModel(m.TSLModel):
         logger.info(f'Model {self.name} downloaded successfully.')
         logger.info('Creating model with system prompt for translation.')
 
-        data = {
-            'name': self.name,
-            'modelfile': MODELFILE_TPL.format(model_name=ollama_name),
-            'stream': False,
-        }
+        version = self.get_version()
+        if version <= (0, 5, 5):
+            data = {
+                'name': self.name,
+                'modelfile': MODELFILE_TPL.format(model_name=ollama_name),
+                'stream': False,
+            }
+        else:
+            sys_prompt = '\n'.join(MODELFILE_TPL.splitlines()[2:-1])  # Remove the FROM and SYSTEM lines/delimiters
+            data = {
+                'name': self.name,
+                'from': ollama_name,
+                'system': sys_prompt,
+                'stream': False,
+            }
         res = self.make_request('POST', 'create', data)
         if res.get('status', 'error') != 'success':
             raise requests.RequestException(f'Failed to create custom model `{self.name}` in ollama.')
 
-
-        # Do something here to load the model or nothing if not needed (should still be defined)
-
     def unload(self) -> None:
         """Unload the model from memory."""
-        # Do something here to unload the model or nothing if not needed (should still be defined)
 
     def _translate(
             self,

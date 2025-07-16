@@ -53,7 +53,7 @@ name = "ocr_translate_ollama"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 DJANGO_SETTINGS_MODULE = "settings"
-log_cli = 1
+log_cli = true
 pythonpath = ["./tests"]
 
 [tool.pylint.main]
