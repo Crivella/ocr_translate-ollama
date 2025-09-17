@@ -19,7 +19,7 @@ keywords = ["django", "translation"]
 requires-python = ">=3.10"
 dependencies = [
     "requests",
-    "django-ocr_translate>=0.2.1,<1.0",
+    "django-ocr_translate>=0.7.0,<1.0",
 ]
 
 [project.urls]
@@ -32,13 +32,13 @@ release = [
 tests = [
     "pytest",
     "pytest-cov",
-    "pytest-django~=4.5.2",
+    "pytest-django",
 ]
 pre-commit = [
-    "pre-commit~=3.3.3",
-    "pylint~=2.17.4",
-    "pylint-pytest~=1.1.2",
-    "pylint-django~=2.5.3",
+    "pre-commit",
+    "pylint",
+    "pylint-pytest",
+    "pylint-django",
 ]
 
 [project.entry-points."ocr_translate.tsl_data"]
